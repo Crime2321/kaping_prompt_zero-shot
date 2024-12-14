@@ -31,7 +31,7 @@ class MPNetEntityInjector:
 		"""
 		return self.model.encode(texts)
 
-	def top_k_triple_extractor(self, question: np.ndarray, triples: np.ndarray, k=10, random=False):
+	def top_k_triple_extractor(self, question: np.ndarray, triples_emb: np.ndarray, triples: list, k=10, random=False):
 		"""
 		Retrieve the top k triples of KGs used as context for the question
 
@@ -42,14 +42,14 @@ class MPNetEntityInjector:
 		:return: list of triples
 		"""
 		# in case number of triples is fewer than k 
-		if len(triples) < k:
-			k = len(triples)
+		if len(triples_emb) < k:
+			k = len(triples_emb)
 
 		if random:
-			return random.sample(infos, k)
+			return random.sample(triples, k)
 
 		# if not the baseline but the top k most similar
-		similarities = cosine_similarity(question, triples)
+		similarities = cosine_similarity(question, triples_emb)
 		top_k_indices = np.argsort(similarities[0])[-k:][::-1]
 
 		return [triples[index] for index in top_k_indices]
@@ -90,8 +90,9 @@ class MPNetEntityInjector:
 		emb_triples = self.sentence_embedding(triples)
 
 		# retrieve the top k triples
-		top_k_triples = self.top_k_triple_extractor(emb_question, emb_triples, k=k, random=random)
+		top_k_triples = self.top_k_triple_extractor(emb_question, emb_triples, triples, k=k, random=random)
 
 		# create prompt as input
-		return self.injection(question, top_k_triples)
+		# when injecting, the question should be string
+		return self.injection(question[0], top_k_triples)
 

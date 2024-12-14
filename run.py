@@ -42,7 +42,7 @@ def main():
 		results.append(qa_pair)
 
 		# evaluate to calculate the accuracy
-		evaluated.append(evaluated(qa_pair.answer, predicted_answer))
+		evaluated.append(evaluate(qa_pair.answer, predicted_answer))
 
 	msg = ""
 	if args.no_knowledge:

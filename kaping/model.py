@@ -30,7 +30,8 @@ def pipeline(config, question: str, device=-1):
 		knowledge_triples.extend(verbalizer(entity, entity_title))
 
 	# entity injection as final prompt as input
-	prompt = injector(question, knowledge_triples, k=config.k, random=config.random, no_knowledge=config.no_knowledge)
+	# quetion should be a list of string
+	prompt = injector([question], knowledge_triples, k=config.k, random=config.random, no_knowledge=config.no_knowledge)
 
 	return prompt
 
